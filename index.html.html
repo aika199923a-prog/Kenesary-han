@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Қаһар: Зияткерлік Жарыс</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Bookman Old Style', 'EB Garamond', serif;
+            background-color: #1a1a1a;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Cg fill-rule="evenodd"%3E%3Cg fill="%23c9ad6a" fill-opacity="0.1"%3E%3Cpath opacity=".5" d="M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z"/%3E%3Cpath d="M6 5V0h1v5h4v1H6v4H5V6H0V5h5z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+        }
+        .historical-logo { animation: pulse-shadow 4s infinite alternate; }
+        @keyframes pulse-shadow { 0% { filter: drop-shadow(0 0 5px #fde047); } 100% { filter: drop-shadow(0 0 20px #facc15); } }
+        .card { background-color: rgba(30, 25, 20, 0.85); border: 2px solid #c9ad6a; box-shadow: 0 0 20px rgba(201, 173, 106, 0.5); backdrop-filter: blur(5px); }
+        .player-window { transition: all 0.3s ease-in-out; border: 2px solid #c9ad6a; }
+        .player-window.active { transform: scale(1.05); box-shadow: 0 0 25px #fde047; border-color: #fde047; }
+        .btn-option { transition: all 0.2s ease; border: 2px solid #c9ad6a; background: linear-gradient(145deg, #4a3f30, #2a231b); color: #f0e6d2; width: 100%; }
+        .btn-option:hover:not(:disabled) { background: linear-gradient(145deg, #c9ad6a, #a98d4a); color: #1a1a1a; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
+        .btn-option:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-option.selected { background: linear-gradient(145deg, #3b82f6, #1d4ed8); border-color: #60a5fa; color: white; }
+        .btn-option.correct { background: linear-gradient(145deg, #22c55e, #16a34a); border-color: #4ade80; color: white; }
+        .btn-option.incorrect { background: linear-gradient(145deg, #ef4444, #dc2626); border-color: #f87171; color: white; }
+        #start-screen, #game-screen, #end-screen { display: none; }
+        #start-screen.active, #game-screen.active, #end-screen.active { display: block; }
+        input[type="text"] { background-color: #f0e6d2; color: #1a1a1a; border: 2px solid #c9ad6a; }
+        input::placeholder { color: #5a4f3b; }
+        .screen { animation: fadeIn 0.7s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .progress-bar-animate { animation: progress-bar-animation 2s linear; }
+        @keyframes progress-bar-animation { from { width: 0%; } to { width: 100%; } }
+    </style>
+</head>
+<body class="text-[#f0e6d2] min-h-screen flex items-center justify-center p-4">
+    <div class="container mx-auto max-w-6xl text-center">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active max-w-4xl mx-auto">
+            <div class="historical-logo w-48 h-48 mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                    <g transform="translate(0, -5)">
+                        <path d="M50 5 C 40 15, 10 25, 10 55 L 10 95 C 10 100, 45 105, 50 105 C 55 105, 90 100, 90 95 L 90 55 C 90 25, 60 15, 50 5 Z" stroke="#c9ad6a" stroke-width="3" fill="#1a1a1a"/>
+                        <path transform="rotate(-45 50 50)" d="M48 15 L52 15 L52 85 L48 85 Z M15 48 L15 52 L85 52 L85 48 Z" fill="#c9ad6a"/>
+                        <path transform="rotate(45 50 50)" d="M48 15 L52 15 L52 85 L48 85 Z M15 48 L15 52 L85 52 L85 48 Z" fill="#c9ad6a"/>
+                        <text x="50" y="70" font-size="30" fill="#f0e6d2" text-anchor="middle" font-weight="bold" style="font-family: 'Bookman Old Style', serif;">Қ</text>
+                    </g>
+                </svg>
+            </div>
+            <h1 class="text-5xl font-bold text-[#c9ad6a] mb-4">"ҚАҺАР" </h1>
+            <p class="text-xl mb-8"> Ілияс Есенберлиннің тарихи романы бойынша зияткерлік ойын</p>
+            <div class="card p-8 rounded-lg">
+                <h2 class="text-2xl mb-6">Ойыншылардың есімдерін енгізіңіз:</h2>
+                <div class="flex flex-col md:flex-row gap-6 justify-center">
+                    <input type="text" id="player1Name" placeholder="1-ші ойыншы" class="p-3 rounded-md text-center text-lg w-full md:w-1/3">
+                    <input type="text" id="player2Name" placeholder="2-ші ойыншы" class="p-3 rounded-md text-center text-lg w-full md:w-1/3">
+                </div>
+                <button id="startGameBtn" class="mt-8 bg-[#c9ad6a] text-[#1a1a1a] font-bold py-3 px-10 rounded-lg text-xl hover:bg-[#e0c384] transition-all">Ойынды бастау</button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <h2 class="text-3xl font-bold text-[#c9ad6a] mb-4">Сұрақ <span id="question-number">1</span>/15</h2>
+            <div class="card p-8 rounded-lg mb-6 min-h-[150px] flex items-center justify-center">
+                <p id="question-text" class="text-2xl leading-relaxed">Сұрақ жүктелуде...</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="w-full">
+                    <div id="player1-window" class="player-window p-4 rounded-lg text-center card mb-4">
+                        <h3 id="p1-name-display" class="text-2xl font-bold text-[#c9ad6a]">1-ші ойыншы</h3>
+                        <p class="text-4xl font-bold mt-1">Ұпай: <span id="p1-score">0</span></p>
+                    </div>
+                    <div id="player1-options-container" class="space-y-3"></div>
+                </div>
+                <div class="w-full">
+                    <div id="player2-window" class="player-window p-4 rounded-lg text-center card mb-4">
+                        <h3 id="p2-name-display" class="text-2xl font-bold text-[#c9ad6a]">2-ші ойыншы</h3>
+                        <p class="text-4xl font-bold mt-1">Ұпай: <span id="p2-score">0</span></p>
+                    </div>
+                    <div id="player2-options-container" class="space-y-3"></div>
+                </div>
+            </div>
+            <div class="mt-6 max-w-4xl mx-auto">
+                <div id="next-question-timer" class="w-full bg-gray-700 rounded-full h-2.5 mb-4 hidden">
+                    <div id="next-question-progress" class="bg-yellow-400 h-2.5 rounded-full" style="width: 0%;"></div>
+                </div>
+                <div class="text-base text-gray-300">
+                    <p><span class="font-bold text-yellow-400">1-ші ойыншы:</span> A, S, D, F &nbsp;&nbsp;|&nbsp;&nbsp; <span class="font-bold text-yellow-400">2-ші ойыншы:</span> J, K, L, ;</p>
+                    <p class="mt-2">Екі ойыншы да жауап таңдаңыз! Дұрыс жауапқа ұпай алады. Екеуі де таңдаған соң келесі сұраққа өтіңіз.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="screen max-w-4xl mx-auto">
+            <h1 class="text-5xl font-bold text-[#c9ad6a] mb-4">Ойын аяқталды!</h1>
+            <div class="card p-8 rounded-lg">
+                <h2 id="winner-text" class="text-3xl mb-6">Нәтиже</h2>
+                <div class="flex flex-col md:flex-row gap-6 justify-center items-center text-2xl">
+                    <div class="p-4">
+                        <p id="final-p1-name" class="font-bold"></p>
+                        <p id="final-p1-score" class="text-4xl text-yellow-400 font-bold"></p>
+                    </div>
+                    <div class="text-4xl text-gray-400">VS</div>
+                    <div class="p-4">
+                        <p id="final-p2-name" class="font-bold"></p>
+                        <p id="final-p2-score" class="text-4xl text-yellow-400 font-bold"></p>
+                    </div>
+                </div>
+                <button id="restartGameBtn" class="mt-8 bg-[#c9ad6a] text-[#1a1a1a] font-bold py-3 px-10 rounded-lg text-xl hover:bg-[#e0c384] transition-all">Қайта ойнау</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Кенесарының ішкі қасиеттері қалай сипатталады?",
+                options: [
+                    "Ішінде тұнып жатқан үлкен ақыл, бұлқыны сыртқа шыққысы келген жігер бары ұласып",
+                    "Ол әрқашан сөйлеп, аз тыңдайтын адам",
+                    "Көзі қараңғы, сақалы қою қара",
+                    "Тұлғасы қысқа бойлы, арық емес, толық"
+                ],
+                answer: "Ішінде тұнып жатқан үлкен ақыл, бұлқыны сыртқа шыққысы келген жігер бары ұласып"
+            },
+            {
+                question: "Нысанбай жыршы Шыңғыс шежіресінде қандай рулардың Шыңғысханға қолдау көрсеткенін айтады?",
+                options: ["Керей, Найман, Алшын, Қыпшақ", "Дулат, Жалайыр, Қоңырат", "Арғын, Уақ, Тарақты", "Бестаңбалы, Үйсін"],
+                answer: "Керей, Найман, Алшын, Қыпшақ"
+            },
+            {
+                question: "Алтын Орда ыдырағаннан кейін Қазақ хандығының құрамына қандай рулар қосылғанын Нысанбай мадақтайды?",
+                options: ["Уақ, Тарақты, Керей, Найман, Қоңырат, Дулат, Жалайыр, Бестаңбалы", "Арғын, Алшын, Қыпшақ", "Керей, Жәнібек", "Шыңғысхан ұрпақтары"],
+                answer: "Уақ, Тарақты, Керей, Найман, Қоңырат, Дулат, Жалайыр, Бестаңбалы"
+            },
+            {
+                question: "Нысанбай жыршы қазақ елінің ауызбірлігін қалай дәлелдейді және қандай руларды ең жауынгер деп атайды?",
+                options: ["Арғын болсаң, Алтай бол; Найман болсаң, Матай бол; Алшын болсаң, Адай бол – Арғын, Найман, Алшын", "Барлық рулар тең", "Тек Керей және Жалайыр", "Үйсін және Дулат"],
+                answer: "Арғын болсаң, Алтай бол; Найман болсаң, Матай бол; Алшын болсаң, Адай бол – Арғын, Найман, Алшын"
+            },
+            {
+                question: "Жоңғар ханы Сыбан Рабтанның шабуылы қандай тарихи оқиғамен байланысты және оның салдары қандай?",
+                options: ["«Ақтабан шұбырынды, Алқакөл сұлама» – Ұлы жүз бен Орта жүздің Есіл, Нұра, Тобылға көшуі", "Алтын Орданың құрылуы", "Қазақ хандығының бірігуі", "Абылайдың хан болуы"],
+                answer: "«Ақтабан шұбырынды, Алқакөл сұлама» – Ұлы жүз бен Орта жүздің Есіл, Нұра, Тобылға көшуі"
+            },
+            {
+                question: "Нысанбай жыршы Абылай ханның (Әбілмансұрдың) қандай жетістіктерін ерекше жыр етеді?",
+                options: ["Қоқанға қарсы жеңіс: Сайрам, Өзірет, Ташкент, Шымкент, Созақ; қырғыздарға қарсы «Жөйіл қырғыны»", "Ресейге қарсы соғыс", "Қытаймен одақ", "Алтын Орданың құрылуы"],
+                answer: "Қоқанға қарсы жеңіс: Сайрам, Өзірет, Ташкент, Шымкент, Созақ; қырғыздарға қарсы «Жөйіл қырғыны»"
+            },
+            {
+                question: "Абылай ханды үш жүздің өкілдері қай жерде хан көтерген?",
+                options: ["Теліқоңырдың жағасында", "Ордабасы тауында", "Шу бойында", "Сарыарқа"],
+                answer: "Теліқоңырдың жағасында"
+            },
+            {
+                question: "Абылай ханның сыртқы саясатының негізгі стратегиясы неде және неге ол қазақ елінің басын қосудың кілті болып көрінеді?",
+                options: ["Ресей мен Қытай арасында тепе-теңдік сақтау – екі ортада бостандықты сақтау", "Тек Ресеймен соғысу", "Қытайға бағану", "Ішкі руларды бөлу"],
+                answer: "Ресей мен Қытай арасында тепе-теңдік сақтау – екі ортада бостандықты сақтау"
+            },
+            {
+                question: "Нысанбай Абылайдың отбасылық байланыстары мен ұрпағын қалай сипаттайды және оның маңызы не?",
+                options: ["Атығай-Қарауыл руларынан алты қыз, қарақалпақ пен қалмақтан – 31 ұл, 40 қыз; елді біріктіру", "Тек қазақ руларынан", "Ешқандай қосымша неке", "Ресеймен одақ"],
+                answer: "Атығай-Қарауыл руларынан алты қыз, қарақалпақ пен қалмақтан – 31 ұл, 40 қыз; елді біріктіру"
+            },
+            {
+                question: "Нысанбай жыршы Кенесарыға Абылай жолының ауырлығын қалай ескертеді және Қасым төренің ойы қандай?",
+                options: ["«Абылай жолы – ауыр жол: Батыр Кене, біліп қой. Абылайдай ер бол, Алам десең абырой» – Қасым Кенесары мен Наурызбайға үміт артады", "Кенесарыға қарсы", "Тек Наурызбайға", "Ешқандай ескерту"],
+                answer: "«Абылай жолы – ауыр жол: Батыр Кене, біліп қой. Абылайдай ер бол, Алам десең абырой» – Қасым Кенесары мен Наурызбайға үміт артады"
+            },
+            {
+                question: "Қасым төре қай адамдардан бір ай бойы хабар ала алмай уайымдайды және бұл оқиғаның маңызы не?",
+                options: ["Саржан мен Есенгелді – олардың саулығы жұбаныш береді", "Кенесары мен Наурызбай", "Нысанбай мен Қожақ", "Жоламан мен Иман"],
+                answer: "Саржан мен Есенгелді – олардың саулығы жұбаныш береді"
+            },
+            {
+                question: "Кенесары қазақтардың тәуелсіздігінен айырылуының басты себебін неде көреді және онымен байланысты қандай бекіністер аталады?",
+                options: ["Ел ағаларының ауызбірлігі жоқтығы – Қызылжар, Ескі Семей, Қараөткел, Баянауыл, Қарқаралы", "Сыртқы жаулардың күші", "Экономикалық дағдарыс", "Рулардың бірлігі"],
+                answer: "Ел ағаларының ауызбірлігі жоқтығы – Қызылжар, Ескі Семей, Қараөткел, Баянауыл, Қарқаралы"
+            },
+            {
+                question: "Кенесары Абылайдың саясатынан қазақ елінің басын қосудың қиыншылығы мен жеңілдігін қалай түсінеді?",
+                options: ["Ресей мен Қытай арасында тепе-теңдік – қиын, бірақ бостандықты сақтауға мүмкіндік; қазір аштық халықты көтереді", "Тек соғыс", "Барлық руларды бөлу", "Одақ құру"],
+                answer: "Ресей мен Қытай арасында тепе-теңдік – қиын, бірақ бостандықты сақтауға мүмкіндік; қазір аштық халықты көтереді"
+            },
+            {
+                question: "Кенесарының ойынша, қазіргі жағдайда қазақ бұқарасының көтерілісіне не себеп болуы мүмкін және қандай батырлар аталады?",
+                options: ["Аштық пен үш жақтан қысым – Күдерәлі, Жоламан, Иман, Саржан", "Байлық", "Рулар бірлігі", "Ресейдің әлсіздігі"],
+                answer: "Аштық пен үш жақтан қысым – Күдерәлі, Жоламан, Иман, Саржан"
+            },
+            {
+                question: "Мәтінде қазақ елінің тарихи дамуының кезеңдері қалай сипатталады және Тәуке хан өлімінен кейінгі өзгеріс не?",
+                options: ["Қасым, Хақназар, Тәуекел, Есім, Тәуке тұсында айбынды мемлекет; Тәуке өлімінен кейін ру сұлтандарының таласы, шырқын кету", "Тек Абылай заманы", "Алтын Орданың құрылуы", "Шыңғысханға бағану"],
+                answer: "Қасым, Хақназар, Тәуекел, Есім, Тәуке тұсында айбынды мемлекет; Тәуке өлімінен кейін ру сұлтандарының таласы, шырқын кету"
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const startScreen = document.getElementById('start-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const endScreen = document.getElementById('end-screen');
+
+            const startGameBtn = document.getElementById('startGameBtn');
+            const restartGameBtn = document.getElementById('restartGameBtn');
+
+            const player1NameInput = document.getElementById('player1Name');
+            const player2NameInput = document.getElementById('player2Name');
+            
+            const p1NameDisplay = document.getElementById('p1-name-display');
+            const p2NameDisplay = document.getElementById('p2-name-display');
+            const p1ScoreDisplay = document.getElementById('p1-score');
+            const p2ScoreDisplay = document.getElementById('p2-score');
+            const p1OptionsContainer = document.getElementById('player1-options-container');
+            const p2OptionsContainer = document.getElementById('player2-options-container');
+
+            const questionNumber = document.getElementById('question-number');
+            const questionText = document.getElementById('question-text');
+
+            const winnerText = document.getElementById('winner-text');
+            const finalP1Name = document.getElementById('final-p1-name');
+            const finalP2Name = document.getElementById('final-p2-name');
+            const finalP1Score = document.getElementById('final-p1-score');
+            const finalP2Score = document.getElementById('final-p2-score');
+            
+            const player1Window = document.getElementById('player1-window');
+            const player2Window = document.getElementById('player2-window');
+
+            const nextQuestionTimer = document.getElementById('next-question-timer');
+            const nextQuestionProgress = document.getElementById('next-question-progress');
+
+            let player1 = { name: "1-ші ойыншы", score: 0, selectedIndex: -1 };
+            let player2 = { name: "2-ші ойыншы", score: 0, selectedIndex: -1 };
+            let currentQuestionIndex = 0;
+
+            const player1Keys = { 'a': 0, 's': 1, 'd': 2, 'f': 3 };
+            const player2Keys = { 'j': 0, 'k': 1, 'l': 2, ';': 3 };
+
+            startGameBtn.addEventListener('click', startGame);
+            restartGameBtn.addEventListener('click', () => location.reload());
+
+            function startGame() {
+                player1.name = player1NameInput.value || "1-ші ойыншы";
+                player2.name = player2NameInput.value || "2-ші ойыншы";
+
+                p1NameDisplay.textContent = player1.name;
+                p2NameDisplay.textContent = player2.name;
+
+                startScreen.classList.remove('active');
+                gameScreen.classList.add('active');
+                
+                document.addEventListener('keydown', handleKeyPress);
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                player1.selectedIndex = -1;
+                player2.selectedIndex = -1;
+                resetPlayerWindowStyles();
+                nextQuestionTimer.classList.add('hidden');
+
+                if (currentQuestionIndex >= questions.length) {
+                    endGame();
+                    return;
+                }
+
+                const currentQuestion = questions[currentQuestionIndex];
+                questionNumber.textContent = currentQuestionIndex + 1;
+                questionText.textContent = currentQuestion.question;
+
+                p1OptionsContainer.innerHTML = '';
+                p2OptionsContainer.innerHTML = '';
+                
+                const optionLettersP1 = ['A', 'S', 'D', 'F'];
+                const optionLettersP2 = ['J', 'K', 'L', ';'];
+
+                currentQuestion.options.forEach((option, index) => {
+                    const button1 = document.createElement('button');
+                    button1.innerHTML = `<span class="font-bold text-yellow-400">[${optionLettersP1[index].toUpperCase()}]</span> ${option}`;
+                    button1.classList.add('btn-option', 'p-4', 'rounded-lg', 'text-lg', 'text-left');
+                    button1.dataset.option = option;
+                    button1.dataset.index = index;
+                    button1.addEventListener('click', () => handleSelection(1, index));
+                    p1OptionsContainer.appendChild(button1);
+
+                    const button2 = document.createElement('button');
+                    button2.innerHTML = `<span class="font-bold text-yellow-400">[${optionLettersP2[index].toUpperCase()}]</span> ${option}`;
+                    button2.classList.add('btn-option', 'p-4', 'rounded-lg', 'text-lg', 'text-left');
+                    button2.dataset.option = option;
+                    button2.dataset.index = index;
+                    button2.addEventListener('click', () => handleSelection(2, index));
+                    p2OptionsContainer.appendChild(button2);
+                });
+            }
+
+            function handleSelection(player, optionIndex) {
+                if (player === 1 && player1.selectedIndex !== -1) return;
+                if (player === 2 && player2.selectedIndex !== -1) return;
+
+                if (player === 1) {
+                    player1.selectedIndex = optionIndex;
+                    highlightSelection(1, optionIndex);
+                } else {
+                    player2.selectedIndex = optionIndex;
+                    highlightSelection(2, optionIndex);
+                }
+
+                if (player1.selectedIndex !== -1 && player2.selectedIndex !== -1) {
+                    evaluateAnswers();
+                }
+            }
+
+            function highlightSelection(player, index) {
+                const buttons = player === 1 ? p1OptionsContainer.querySelectorAll('.btn-option') : p2OptionsContainer.querySelectorAll('.btn-option');
+                buttons.forEach((btn, i) => {
+                    btn.classList.remove('selected', 'correct', 'incorrect');
+                });
+                buttons[index].classList.add('selected');
+            }
+
+            function handleKeyPress(e) {
+                const key = e.key.toLowerCase();
+                let player, optionIndex;
+
+                if (player1Keys.hasOwnProperty(key) && player1.selectedIndex === -1) {
+                    player = 1;
+                    optionIndex = player1Keys[key];
+                } else if (player2Keys.hasOwnProperty(key) && player2.selectedIndex === -1) {
+                    player = 2;
+                    optionIndex = player2Keys[key];
+                } else {
+                    return;
+                }
+
+                handleSelection(player, optionIndex);
+            }
+
+            function evaluateAnswers() {
+                const correctAnswer = questions[currentQuestionIndex].answer;
+                const correctIndex = questions[currentQuestionIndex].options.indexOf(correctAnswer);
+                const p1Buttons = p1OptionsContainer.querySelectorAll('.btn-option');
+                const p2Buttons = p2OptionsContainer.querySelectorAll('.btn-option');
+
+                // Подсветка для каждого игрока
+                if (player1.selectedIndex === correctIndex) {
+                    player1.score++;
+                    p1ScoreDisplay.textContent = player1.score;
+                    p1Buttons[player1.selectedIndex].classList.remove('selected');
+                    p1Buttons[player1.selectedIndex].classList.add('correct');
+                    player1Window.classList.add('active');
+                } else {
+                    p1Buttons[player1.selectedIndex].classList.remove('selected');
+                    p1Buttons[player1.selectedIndex].classList.add('incorrect');
+                }
+
+                if (player2.selectedIndex === correctIndex) {
+                    player2.score++;
+                    p2ScoreDisplay.textContent = player2.score;
+                    p2Buttons[player2.selectedIndex].classList.remove('selected');
+                    p2Buttons[player2.selectedIndex].classList.add('correct');
+                    player2Window.classList.add('active');
+                } else {
+                    p2Buttons[player2.selectedIndex].classList.remove('selected');
+                    p2Buttons[player2.selectedIndex].classList.add('incorrect');
+                }
+
+                // Подсветка правильного для обоих
+                p1Buttons[correctIndex].classList.add('correct');
+                p2Buttons[correctIndex].classList.add('correct');
+
+                // Отключить все кнопки
+                p1Buttons.forEach(btn => btn.disabled = true);
+                p2Buttons.forEach(btn => btn.disabled = true);
+
+                // Таймер
+                nextQuestionTimer.classList.remove('hidden');
+                nextQuestionProgress.style.width = '0%';
+                nextQuestionProgress.classList.add('progress-bar-animate');
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    nextQuestionTimer.classList.add('hidden');
+                    nextQuestionProgress.classList.remove('progress-bar-animate');
+                    nextQuestionProgress.style.width = '0%';
+                    loadQuestion();
+                }, 3000); // Увеличил время для просмотра
+            }
+            
+            function resetPlayerWindowStyles() {
+                player1Window.classList.remove('active');
+                player2Window.classList.remove('active');
+            }
+
+            function endGame() {
+                gameScreen.classList.remove('active');
+                endScreen.classList.add('active');
+                document.removeEventListener('keydown', handleKeyPress);
+
+                finalP1Name.textContent = player1.name;
+                finalP1Score.textContent = player1.score + " ұпай";
+                finalP2Name.textContent = player2.name;
+                finalP2Score.textContent = player2.score + " ұпай";
+
+                if (player1.score > player2.score) {
+                    winnerText.textContent = `${player1.name} жеңіске жетті!`;
+                } else if (player2.score > player1.score) {
+                    winnerText.textContent = `${player2.name} жеңіске жетті!`;
+                } else {
+                    winnerText.textContent = "Екі ойыншының ұпайы тең болды!";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
